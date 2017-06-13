@@ -1,0 +1,82 @@
+
+<style>
+    table tr td {
+        padding: 5px 15px;
+    }
+
+    table tr th {
+        padding: 5px 10px;
+    }
+</style>
+<p><?php echo __('Your order # is: ') . $this->getData('orderID') ?></p>
+<p><?php echo __("There has been an error while processing your payment, please try again later.") ?></p>
+<h2 class="sub-title"><?php echo __('Payment information:'); ?></h2>
+<table border="1">
+
+    <tbody>
+    <tr>
+        <th><strong><?php echo __('Order ID') ?></strong></th>
+        <td><?php echo $this->getData('orderID') ?></td>
+    </tr>
+    <tr>
+        <th><strong><?php echo __('Authorization code') ?></strong></th>
+        <td><?php echo $this->getData('AuthCode') ?></td>
+    </tr>
+    <tr>
+        <th><strong><?php echo __('Unique Internet transaction ID') ?></strong></th>
+        <td><?php echo $this->getData('xid') ?></td>
+    </tr>
+    <tr>
+        <th><strong><?php echo __('Response') ?></strong></th>
+        <td><?php echo $this->getData('Response') ?></td>
+    </tr>
+    <tr>
+        <th><strong><?php echo __('Transaction status code') ?></strong></th>
+        <td><?php echo $this->getData('ProcReturnCode') ?></td>
+    </tr>
+    <tr>
+        <th><strong><?php echo __('Unique transaction ID') ?></strong></th>
+        <td><?php echo $this->getData('TransId') ?></td>
+    </tr>
+    <tr>
+        <th><strong><?php echo __('Transaction Date') ?></strong></th>
+        <td><?php echo $this->getData('EXTRA_TRXDATE') ?></td>
+    </tr>
+    </tbody>
+</table>
+<?php
+if ($this->getData('orderID') > 0) {
+    $order = $this->_getOrder($this->getData('orderID'));
+    $billing_info = $order->getBillingAddress();
+    ?>
+    <h2 class="sub-title"><?php echo __('Billing information'); ?>:</h2>
+    <table border="1">
+
+        <tbody>
+        <tr>
+            <th><strong><?php echo __('Name and Surname') ?></strong></th>
+            <td><?php echo $billing_info->getName() ?></td>
+        </tr>
+        <tr>
+            <th><strong><?php echo __('Address') ?></strong></th>
+            <td>
+                <?php echo $billing_info->getStreetFull() ?><br>
+            </td>
+        </tr>
+        <tr>
+            <th><strong><?php echo __('Post code') ?></strong></th>
+            <td><?php echo $billing_info->getPostcode() ?></td>
+        </tr>
+        <tr>
+            <th><strong><?php echo __('City') ?></strong></th>
+            <td><?php echo $billing_info->getCity() ?></td>
+        </tr>
+        <tr>
+            <th><strong><?php echo __('Country') ?></strong></th>
+            <td><?php echo $billing_info->getCountryId() ?></td>
+        </tr>
+        </tbody>
+    </table>
+    <?php
+}
+

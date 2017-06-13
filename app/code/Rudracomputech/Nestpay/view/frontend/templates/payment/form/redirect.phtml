@@ -1,0 +1,55 @@
+<?php
+
+$data = $this->getData();
+extract($data[0]);
+?>
+<h2><?php echo __('Nestpay Gateway') ?></h2>
+<p><?php echo  __('Redirecting to Nestpay Payment Gateway...') ?></p>
+<form name="nestpay" method="post"
+	  action="<?php echo $gatewayurl ?>">
+
+	<input type="hidden" name="clientid" value="<?php echo $clientid; ?>"/>
+	<input type="hidden" name="storetype" value="3d_pay_hosting"/>
+	<input type="hidden" name="hash" value="<?php echo $hash; ?>"/>
+	<input type="hidden" name="trantype" value="<?php echo $trantype; ?>"/>
+	<input type="hidden" name="amount" value="<?php echo $ammount; ?>"/>
+	<input type="hidden" name="currency" value="<?php echo $currency; ?>"/>
+	<input type="hidden" name="oid" value="<?php echo $oid; ?>"/>
+	<input type="hidden" name="okUrl" value="<?php echo $okUrl; ?>"/>
+	<input type="hidden" name="failUrl" value="<?php echo $failUrl; ?>"/>
+	<input type="hidden" name="lang" value="<?php echo $lang; ?>"/>
+	<input type="hidden" name="rnd" value="<?php echo $rnd; ?>"/>
+	<input type="hidden" name="hashAlgorithm" value="Ver2"/>
+	<input type="hidden" name="encoding" value="<?php echo $encoding; ?>"/>
+
+	<?php
+	if ($sendCustomerInfo) {
+		?>
+		<input type="hidden" name="BillToCompany" value="<?php echo $billingAddress_company ?>">
+		<input type="hidden" name="BillToName"
+			   value="<?php echo $billingAddress_firstname . " " . $billingAddress_lastname ?>">
+		<input type="hidden" name="BillToStreet1" value="<?php echo $billingAddress_Street1 ?>">
+		<input type="hidden" name="BillToStreet2" value="<?php echo $billingAddress_Street2 ?>">
+		<input type="hidden" name="BillToCity" value="<?php echo $billingAddress_city ?>">
+		<input type="hidden" name="BillToStateProv" value="<?php echo $billingAddress_region ?>">
+		<input type="hidden" name="BillToPostalCode" value="<?php echo $billingAddress_postcode ?>">
+		<input type="hidden" name="BillToCountry" value="<?php echo $billingAddress_country_id ?>">
+		<input type="hidden" name="email" value="<?php echo $billingAddress_email ?>">
+		<input type="hidden" name="tel" value="<?php echo $billingAddress_phone ?>">
+
+		<input type="hidden" name="ShipToCompany" value="<?php echo $shippingAddress_company ?>">
+		<input type="hidden" name="ShipToName"
+			   value="<?php echo $shippingAddress_firstname . " " . $shippingAddress_lastname ?>">
+		<input type="hidden" name="ShipToStreet1" value="<?php echo $shippingAddress_Street1 ?>">
+		<input type="hidden" name="ShipToStreet2" value="<?php echo $shippingAddress_Street2 ?>">
+		<input type="hidden" name="ShipToCity" value="<?php echo $shippingAddress_city ?>">
+		<input type="hidden" name="ShipToStateProv" value="<?php echo $shippingAddress_region ?>">
+		<input type="hidden" name="ShipToPostalCode" value="<?php echo $shippingAddress_postcode ?>">
+		<input type="hidden" name="ShipToCountry" value="<?php echo $shippingAddress_country_id ?>">
+		<?php
+	}
+	?>
+</form>
+<script type="text/javascript">
+	document.nestpay.submit();
+</script>
