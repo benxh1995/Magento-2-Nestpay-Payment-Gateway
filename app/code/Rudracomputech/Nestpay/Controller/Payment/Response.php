@@ -1,30 +1,19 @@
 <?php
 namespace Rudracomputech\Nestpay\Controller\Payment;
-
-
-
-
 class Response extends \Magento\Framework\App\Action\Action {
-	
-  
-  
 	protected $_checkoutSession;
 	protected $_resultPageFactory;
 	protected $layoutFactory;
-	
 	 /**
      * @var \Magento\Sales\Model\OrderFactory
      */
     protected $_orderFactory;
-	
-	
 	/**
      * Order object
      *
      * @var \Magento\Sales\Model\Order
      */
     protected $_order;
-	
 	 /**
      * @var \Psr\Log\LoggerInterface
      */
@@ -33,7 +22,6 @@ class Response extends \Magento\Framework\App\Action\Action {
     protected $_logger;
 	private $redirectFactory;
 	protected $messageManager;
-	
 	protected $liveUrl = 'https://bib.eway2pay.com/fim/est3Dgate';
     protected $testUrl = 'https://testsecurepay.intesasanpaolocard.com/fim/est3dgate';
     /**
@@ -42,10 +30,7 @@ class Response extends \Magento\Framework\App\Action\Action {
      * @param \Magento\Framework\App\Action\Context  $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
      */
-	 
 	 protected $resultRawFactory;
-	 
-	 
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
         \Magento\Checkout\Model\Session $checkoutSession,
@@ -61,7 +46,6 @@ class Response extends \Magento\Framework\App\Action\Action {
 		 \Magento\Framework\View\LayoutInterface $layout
     )
     {
-		
 $this->_resultPageFactory = $resultPageFactory;
     	 $this->_checkoutSession = $checkoutSession;
         $this->_orderFactory = $orderFactory;
@@ -72,13 +56,9 @@ $this->_resultPageFactory = $resultPageFactory;
 			 $this->_storeManager = $storeManager;
 	   $this->_layout = $layout;
 	    $this->resultRawFactory = $resultRawFactory; 
-		
-		
         $this->_logger = $logger;
         parent::__construct($context);
     }
-	
-	
    protected function _getOrder($incrementId= null)
     {
         if (!$this->_order) {
@@ -87,7 +67,6 @@ $this->_resultPageFactory = $resultPageFactory;
         }
         return $this->_order;
     }
-	
 	/**
      * Get frontend checkout session object
      *
@@ -97,7 +76,6 @@ $this->_resultPageFactory = $resultPageFactory;
     {
         return $this->_checkoutSession;
     }
-
     /**
      * Execute view action
      * 
@@ -105,32 +83,24 @@ $this->_resultPageFactory = $resultPageFactory;
      */
     public function execute()
     {
-		
-			
 		$configHelper = $this->_objectManager->get('Rudracomputech\Dinnerclub\Helper\Data');
-		
         if ($this->getRequest()->get("Response") == "Approved" && $this->getRequest()->get("ReturnOid")) {
             /**
              * Order succeeded
              */
 			$orderId = $this->getRequest()->get("oid");
             $order =  $this->_getOrder($orderId);
-           
-           
             if ($order->isEmpty()) {
                 $this->messageManager->addError( __("No order for processing found."));
 				return $this->redirectFactory->create()->setPath('checkout/cart/index');
             }
-
             /**
              * Save transaction info
              */
             $transactionID = $this->getRequest()->get("TransId");
             $comment = $this->getRequest()->get("ErrMsg");
-
             $payment = $order->getPayment();
             $payment->setTransactionId($transactionID);
-
             switch ($this->getRequest()->get("trantype")) {
                 case 'Auth':
                     $type = 'authorization';
@@ -142,27 +112,19 @@ $this->_resultPageFactory = $resultPageFactory;
                     $type = 'order';
                     break;
             }
-
             $transaction = $payment->addTransaction($type, null, false, $comment);
             $transaction->setParentTxnId($transactionID);
             $transaction->setIsClosed(true);
             $transaction->save();
             $order->save();
-
             /**
              * Change state
              */
-
             $order->setState(Mage_Sales_Model_Order::STATE_NEW, true, 'Payment Success.');
             $order->save();
-
-			
-			
-			
             /**
              * Send email
              */
-
             $data['order'] = $order;
             $data['payment_html'] = $configHelper->getConfig('payment/nestpay/title');
             $data['orderID'] = $this->getRequest()->get("oid");
@@ -172,9 +134,6 @@ $this->_resultPageFactory = $resultPageFactory;
             $data['ProcReturnCode'] = $this->getRequest()->get("ProcReturnCode");
             $data['TransId'] = $this->getRequest()->get("TransId");
             $data['EXTRA_TRXDATE'] = $this->getRequest()->get("EXTRA_TRXDATE");
-
-          
-			
 			$template = $this->_transportBuilder->setTemplateIdentifier('nestpay_payment_received')
 				->setTemplateOptions([
 					'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
@@ -182,18 +141,12 @@ $this->_resultPageFactory = $resultPageFactory;
 				])->setTemplateVars($data);
             //$processedTemplate = utf8_decode($emailTemplate->getProcessedTemplate($data));
             $processedTemplate = mb_convert_encoding($template, 'ISO-8859-1', 'UTF-8');
-
-
-        
-
             $mail = new \Zend_Mail('utf-8');
             $mail->setBodyHtml($processedTemplate);
-
             $mail->setFrom($configHelper->getConfig('trans_email/ident_sales/email'), $configHelper->getConfig('trans_email/ident_sales/name'))
                 ->addTo($order->getBillingAddress()->getEmail(), $order->getBillingAddress()->getName())
                 ->setSubject($this->__('Payment successful #') . $orderId);
             $mail->send();
-
             //Mage_Core_Controller_Varien_Action::_redirect('nestpay/payment/success', array('_secure' => true));
             $this->_forward('success', NULL, NULL, $data);
             //Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/success', array('_secure' => true));
@@ -207,23 +160,18 @@ $this->_resultPageFactory = $resultPageFactory;
              */
             $orderId = $this->getRequest()->get("oid");
             $order =  $this->_getOrder($orderId);
-         
             if ($order->isEmpty()) {
-               
-
                # $this->messageManager->addError( __("No order for processing found."));
 				return $this->redirectFactory->create()->setPath('nestpay/payment/error');
             }
-
-
             /**
              * Order failed, set status accordingly
              */
             if ($order->canCancel()) {
                 $order->cancel();
             }
-            $order->setState(Mage_Sales_Model_Order::STATE_CANCELED, true, "Payment failed: " . $this->getRequest()->get('mdErrorMsg') . ". - " . $this->getRequest()->get('Response'), false)->save();
-
+            $order->setState('canceled', true, "Payment failed: " . $this->getRequest()->get('mdErrorMsg') . ". - " . $this->getRequest()->get('Response'), false)->save();
+			$order->setStatus('canceled');
             /**
              * Save transaction info
              */
@@ -238,21 +186,15 @@ $this->_resultPageFactory = $resultPageFactory;
                 $transaction->save();
             }
             $order->save();
-
             /**
              * Reuse last quote
              */
-            
-            
-            $quote = $this->_objectManager->create('Magento\Quote\Model\Quote')->loadByIdWithoutStor‌​e($order->getQuoteId());
+            $quote = $this->_objectManager->create('Magento\Quote\Model\Quote')->load($order->getQuoteId());
             $quote->setIsActive(true)->setReservedOrderId(NULL)->save();
             $session->replaceQuote($quote);
-
-
             /**
              * Send email
              */
-
             $data['order'] = $order;
             $data['payment_html'] = $configHelper->getConfig('payment/nestpay/title');
             $data['orderID'] = $this->getRequest()->get("oid");
@@ -262,40 +204,25 @@ $this->_resultPageFactory = $resultPageFactory;
             $data['ProcReturnCode'] = $this->getRequest()->get("ProcReturnCode");
             $data['TransId'] = $this->getRequest()->get("TransId");
             $data['EXTRA_TRXDATE'] = $this->getRequest()->get("EXTRA_TRXDATE");
-
+			 $sender = [
+			 'name' => $configHelper->getConfig('trans_email/ident_sales/name'),
+			 'email' => $configHelper->getConfig('trans_email/ident_sales/email'),
+			 ];
+			$recipient = $order->getBillingAddress()->getEmail();
             $template = $this->_transportBuilder->setTemplateIdentifier('nestpay_payment_failed')
 				->setTemplateOptions([
 					'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
 					'store' => $this->_storeManager->getStore()->getId(),
-				])->setTemplateVars($data);
-            //$processedTemplate = utf8_decode($emailTemplate->getProcessedTemplate($data));
-            $processedTemplate = mb_convert_encoding($template, 'ISO-8859-1', 'UTF-8');
-
-            /**
-             * Send email
-             */
-
-            $mail = new \Zend_Mail('uft-8');
-            //$mail->setHeaderEncoding(Zend_Mime::ENCODING_BASE64);
-            $mail->setBodyHtml($processedTemplate);
-
-            $mail->setFrom($configHelper->getConfig('trans_email/ident_sales/email'), $configHelper->getConfig('trans_email/ident_sales/name'))
-                ->addTo($order->getBillingAddress()->getEmail(), $order->getBillingAddress()->getName())
-                ->setSubject($this->__('Payment failed #') . $orderId);
-
-            $mail->send();
-
-
+				])->setTemplateVars($data)
+			 	 ->setFrom($sender)
+				 ->addTo($recipient)
+				  ->setReplyTo($configHelper->getConfig('trans_email/ident_sales/email'))
+				 ->getTransport();
+			 $template->sendMessage();	 
             /**
              * Redirect to error page
              */
             $this->_forward('error', NULL, NULL, $data);
         }
-		
-       
     }
-	
-	
-	
-	
 }
