@@ -134,10 +134,17 @@ $this->_resultPageFactory = $resultPageFactory;
         $oid = str_replace("|", "\\|", str_replace("\\", "\\\\", $order->getIncrementId()));
         $amountp = str_replace("|", "\\|", str_replace("\\", "\\\\", $order->getGrandTotal()));
         $amount = round($amountp,2);
-        $okurl = str_replace("|", "\\|", str_replace("\\", "\\\\",  $configHelper->getConfig('payment/nestpay/response')));
-        $failurl = str_replace("|", "\\|", str_replace("\\", "\\\\",  $configHelper->getConfig('payment/nestpay/response')));
+        $okurl = str_replace("|", "\\|", str_replace("\\", "\\\\",  $configHelper->getConfig('nestpay/payment/response')));
+        $failurl = str_replace("|", "\\|", str_replace("\\", "\\\\",  $configHelper->getConfig('nestpay/payment/response')));
         $trantype = str_replace("|", "\\|", str_replace("\\", "\\\\",  $configHelper->getConfig('payment/nestpay/trantype')));
         $instalment = '';
+        
+if($okurl == "") {
+    $okurl = "https://kutivo.com/nestpay/payment/response";
+}
+if($failurl == "") {
+    $failurl = "https://kutivo.com/nestpay/payment/response";
+}
 
         $rnd = microtime();
 
