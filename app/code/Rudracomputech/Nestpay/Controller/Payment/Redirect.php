@@ -126,7 +126,7 @@ $this->_resultPageFactory = $resultPageFactory;
       
 		
 		
-		$configHelper = $this->_objectManager->get('Rudracomputech\Dinnerclub\Helper\Data');
+		$configHelper = $this->_objectManager->get('Rudracomputech\Nestpay\Helper\Data');
 		
 		
 		

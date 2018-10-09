@@ -83,7 +83,7 @@ $this->_resultPageFactory = $resultPageFactory;
      */
     public function execute()
     {
-		$configHelper = $this->_objectManager->get('Rudracomputech\Dinnerclub\Helper\Data');
+		$configHelper = $this->_objectManager->get('Rudracomputech\Nestpay\Helper\Data');
         if ($this->getRequest()->get("Response") == "Approved" && $this->getRequest()->get("ReturnOid")) {
             /**
              * Order succeeded

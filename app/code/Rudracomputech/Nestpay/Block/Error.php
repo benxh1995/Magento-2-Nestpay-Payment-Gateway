@@ -23,7 +23,7 @@ class Error extends Template
        
     }
 	public function setValue(){
-		#$configHelper = $this->_objectManager->get('Rudracomputech\Dinnerclub\Helper\Data');
+		#$configHelper = $this->_objectManager->get('Rudracomputech\Nestpay\Helper\Data');
 		
 		 $arrayData = array('orderID' =>  $this->getRequest()->getParam('orderID'),
 							'AuthCode' => $this->getRequest()->getParam('AuthCode'),
