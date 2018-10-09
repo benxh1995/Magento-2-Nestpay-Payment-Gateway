@@ -33,8 +33,8 @@ class Redirect extends \Magento\Framework\App\Action\Action {
 	private $redirectFactory;
 	protected $messageManager;
 	
-	protected $liveUrl = 'https://bib.eway2pay.com/fim/est3Dgate';
-    protected $testUrl = 'https://testsecurepay.intesasanpaolocard.com/fim/est3dgate';
+    protected $liveUrl = 'https://epay.halkbank.mk/fim/est3Dgate';
+    protected $testUrl = 'https://entegrasyon.asseco-see.com.tr/fim/est3Dgate';
     /**
      * Constructor
      * 
@@ -146,9 +146,9 @@ $this->_resultPageFactory = $resultPageFactory;
         $lang = "en";
         $storetype = "3D_PAY_HOSTING";
 
-        $plaintext = $clientid . '|' . $oid . '|' . $amount . '|' . $okurl . '|' . $failurl . '|' . $trantype . '|' . $instalment . '|' . $rnd . '||||' . $currency . '|' . $storekey;
+        $plaintext = $clientid .  $oid . $amount . $okurl . $failurl . $trantype . $instalment . $rnd . $storekey;
 
-        $hashValue = hash('sha512', $plaintext);
+        $hashValue = hash('sha1', $plaintext);
         $hash = base64_encode(pack('H*', $hashValue));
 		
 		

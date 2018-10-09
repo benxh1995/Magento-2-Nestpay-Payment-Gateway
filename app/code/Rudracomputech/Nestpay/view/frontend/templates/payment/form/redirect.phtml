@@ -9,19 +9,19 @@ extract($data[0]);
 	  action="<?php echo $gatewayurl ?>">
 
 	<input type="hidden" name="clientid" value="<?php echo $clientid; ?>"/>
-	<input type="hidden" name="storetype" value="3d_pay_hosting"/>
-	<input type="hidden" name="hash" value="<?php echo $hash; ?>"/>
-	<input type="hidden" name="trantype" value="<?php echo $trantype; ?>"/>
 	<input type="hidden" name="amount" value="<?php echo $ammount; ?>"/>
-	<input type="hidden" name="currency" value="<?php echo $currency; ?>"/>
+	<input type="hidden" name="islemtipi" value="<?php echo $trantype; ?>"/>
+	<input type="hidden" name="taksit" value="" />
 	<input type="hidden" name="oid" value="<?php echo $oid; ?>"/>
 	<input type="hidden" name="okUrl" value="<?php echo $okUrl; ?>"/>
 	<input type="hidden" name="failUrl" value="<?php echo $failUrl; ?>"/>
-	<input type="hidden" name="lang" value="<?php echo $lang; ?>"/>
 	<input type="hidden" name="rnd" value="<?php echo $rnd; ?>"/>
-	<input type="hidden" name="hashAlgorithm" value="Ver2"/>
+	<input type="hidden" name="hash" value="<?php echo $hash; ?>"/>
+	<input type="hidden" name="storetype" value="3d_pay_hosting"/>
+	<input type="hidden" name="lang" value="<?php echo $lang; ?>"/>
+	<input type="hidden" name="currency" value="<?php echo $currency; ?>"/>
 	<input type="hidden" name="encoding" value="<?php echo $encoding; ?>"/>
-
+	<input type="hidden" name="refreshtime" value="10" />
 	<?php
 	if ($sendCustomerInfo) {
 		?>
