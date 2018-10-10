@@ -1,6 +1,6 @@
 
 <h2 class="sub-title"><?php echo __('Thank you for your purchase!') ?></h2>
-<p><?php echo __('Your order # is: ') . $this->getData('orderID') ?></p>
+<p><?php echo __('Your order # is: ') . $this->getData('oid') ?></p>
 <p><?php echo __('You will receive an order confirmation email with details of your order and a link to track the progress.') ?></p>
 <style>
     table tr td {
@@ -17,7 +17,7 @@
     <tbody>
     <tr>
         <th><strong><?php echo __('Order ID') ?></strong></th>
-        <td><?php echo $this->getData('orderID') ?></td>
+        <td><?php echo $this->getData('oid') ?></td>
     </tr>
     <tr>
         <th><strong><?php echo __('Authorization code') ?></strong></th>
@@ -46,8 +46,8 @@
     </tbody>
 </table>
 <?php
-if ($this->getData('orderID') > 0) {
-    $order = $this->_getOrder($this->getData('orderID'));
+if ($this->getData('oid') > 0) {
+    $order = $this->_getOrder($this->getData('oid'));
     $billing_info = $order->getBillingAddress();
     ?>
     <h2 class="sub-title"><?php echo __('Billing information'); ?>:</h2>

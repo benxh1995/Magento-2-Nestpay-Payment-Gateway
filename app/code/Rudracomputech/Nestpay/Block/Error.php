@@ -25,7 +25,7 @@ class Error extends Template
 	public function setValue(){
 		#$configHelper = $this->_objectManager->get('Rudracomputech\Nestpay\Helper\Data');
 		
-		 $arrayData = array('orderID' =>  $this->getRequest()->getParam('orderID'),
+		 $arrayData = array('oid' =>  $this->getRequest()->getParam('oid'),
 							'AuthCode' => $this->getRequest()->getParam('AuthCode'),
 							'xid' => $this->getRequest()->getParam('xid'),
 							'Response' => $this->getRequest()->getParam('Response'),

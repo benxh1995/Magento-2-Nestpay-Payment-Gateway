@@ -85,11 +85,13 @@ $this->_resultPageFactory = $resultPageFactory;
     {
 		$configHelper = $this->_objectManager->get('Rudracomputech\Nestpay\Helper\Data');
         if ($this->getRequest()->get("Response") == "Approved" && $this->getRequest()->get("ReturnOid")) {
+            
             /**
              * Order succeeded
              */
 			$orderId = $this->getRequest()->get("oid");
             $order =  $this->_getOrder($orderId);
+            
             if ($order->isEmpty()) {
                 $this->messageManager->addError( __("No order for processing found."));
 				return $this->redirectFactory->create()->setPath('checkout/cart/index');
@@ -97,6 +99,7 @@ $this->_resultPageFactory = $resultPageFactory;
             /**
              * Save transaction info
              */
+
             $transactionID = $this->getRequest()->get("TransId");
             $comment = $this->getRequest()->get("ErrMsg");
             $payment = $order->getPayment();
@@ -116,30 +119,36 @@ $this->_resultPageFactory = $resultPageFactory;
             $transaction->setParentTxnId($transactionID);
             $transaction->setIsClosed(true);
             $transaction->save();
+            $payment->save();
             $order->save();
             /**
              * Change state
              */
-            $order->setState(Mage_Sales_Model_Order::STATE_NEW, true, 'Payment Success.');
-            $order->save();
-            /**
-             * Send email
-             */
+            $order->setStatus('pending');
+            $order->setState('pending', true, 'Payment Success', false)->save();
+            
+            $order->addStatusToHistory('pending','Payment Success', false)->save();
+ 
+            //die(var_dump($order));
+            
+            /* Send Email */
+            
             $data['order'] = $order;
             $data['payment_html'] = $configHelper->getConfig('payment/nestpay/title');
-            $data['orderID'] = $this->getRequest()->get("oid");
+            $data['oid'] = $this->getRequest()->get("oid");
             $data['AuthCode'] = $this->getRequest()->get("AuthCode");
             $data['xid'] = $this->getRequest()->get("xid");
             $data['Response'] = $this->getRequest()->get("Response");
             $data['ProcReturnCode'] = $this->getRequest()->get("ProcReturnCode");
             $data['TransId'] = $this->getRequest()->get("TransId");
             $data['EXTRA_TRXDATE'] = $this->getRequest()->get("EXTRA_TRXDATE");
+            
 			$template = $this->_transportBuilder->setTemplateIdentifier('nestpay_payment_received')
 				->setTemplateOptions([
 					'area' => \Magento\Framework\App\Area::AREA_FRONTEND,
 					'store' => $this->_storeManager->getStore()->getId(),
 				])->setTemplateVars($data);
-            //$processedTemplate = utf8_decode($emailTemplate->getProcessedTemplate($data));
+            $processedTemplate = utf8_decode($template->getProcessedTemplate($data));
             $processedTemplate = mb_convert_encoding($template, 'ISO-8859-1', 'UTF-8');
             $mail = new \Zend_Mail('utf-8');
             $mail->setBodyHtml($processedTemplate);
@@ -147,9 +156,12 @@ $this->_resultPageFactory = $resultPageFactory;
                 ->addTo($order->getBillingAddress()->getEmail(), $order->getBillingAddress()->getName())
                 ->setSubject($this->__('Payment successful #') . $orderId);
             $mail->send();
-            //Mage_Core_Controller_Varien_Action::_redirect('nestpay/payment/success', array('_secure' => true));
+            
             $this->_forward('success', NULL, NULL, $data);
+            
             //Mage_Core_Controller_Varien_Action::_redirect('checkout/onepage/success', array('_secure' => true));
+            //Mage_Core_Controller_Varien_Action::_redirect('nestpay/payment/success', array('_secure' => true));
+
         } else {
             /**
              * Get current session
